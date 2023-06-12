@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 use App\Entity\Course;
+use App\Entity\Language;
+use App\Repository\CourseRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CourseController extends AbstractController
 {
     #[Route('/course', name: 'create_course', methods:'POST')]
-    public function createCourse(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
+    public function createCourse(Request $request, CourseRepository $courseR, ValidatorInterface $validator): Response
     {
 
         $requestData = json_decode($request->getContent(), true);
@@ -33,7 +35,7 @@ class CourseController extends AbstractController
             return new Response((string) $errors, 400);
         }
 
-        $entityManager->getRepository(Course::class)->save($course, true);
+        $courseR->save($course, true);
 
         
         return new Response('Saved new courses with id :'.$course->getId());
@@ -43,7 +45,7 @@ class CourseController extends AbstractController
     #[route('/api/courses', name:'all_coures', methods: 'GET')]
     public function getAllCourses(EntityManagerInterface $entityManager): JsonResponse
     {
-        $courses = $entityManager->getRepository(Course::class)->findAll();
+        $courses = $entityManager->getRepository(Language::class)->findAll();
         return $this->json($courses);
     }
 
