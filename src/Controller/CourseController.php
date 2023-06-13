@@ -3,7 +3,9 @@
 namespace App\Controller;
 use App\Entity\Course;
 use App\Entity\Language;
+use App\Form\LanguageFormType;
 use App\Repository\CourseRepository;
+use App\Repository\LanguageRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -43,10 +45,35 @@ class CourseController extends AbstractController
     }
 
     #[route('/api/courses', name:'all_coures', methods: 'GET')]
-    public function getAllCourses(EntityManagerInterface $entityManager): JsonResponse
+    public function getAllCourses(EntityManagerInterface $entityManager): Response
     {
+        $newLanguage = new Language();
+        $form = $this->createForm(LanguageFormType::class, $newLanguage);
         $courses = $entityManager->getRepository(Language::class)->findAll();
-        return $this->json($courses);
+        // return $this->json($courses);
+        return $this->render('index.html.twig', ['allCourses' => $courses, 'languageForm' => $form->createView()]);
+    }
+
+
+
+    #[route('post_language', name:'post-language', methods: 'POST')]
+    public function postLanguage(LanguageRepository $languageR, Request $request){
+
+        $newLanguage = new Language();
+        $form = $this->createForm(LanguageFormType::class, $newLanguage);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Traitez les données du formulaire ici
+            // Vous pouvez accéder aux valeurs du formulaire à l'aide de $yourEntity
+            $languageR->save($newLanguage, true);
+
+            // Redirigez ou effectuez toute autre action après la soumission réussie du formulaire
+            return $this->redirectToRoute('all_coures');
+        }else{
+            return -1;
+        }
     }
 
     public function index(): JsonResponse

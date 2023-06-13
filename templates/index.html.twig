@@ -1,42 +1,52 @@
 {% extends 'base.html.twig' %} 
 {% block title %} recevoir mon mail {% endblock %}
 {% block body %}
-    <div class="" align="center">
+    <div class="mt-3 container text-center">
         <h1>ELEARNING FOR AFRICANS LANGUAGES</h1>
-        <p>Connecté en tant que {{name}}</p>
         <h2>Listes des langues en SQL</h2>
         <hr>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Ajouter un utilisateur</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Ajouter une langue</button>
         <hr>  
-        <table>
-            <th></th>
-            <tr>
-                <td></td>
-                <td></td>
-            </tr>
+        <table class="table">
+            <thead>
+                <th>ID</th>
+                <th>Nom de la langue</th>
+                <th>Heure</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+                {% for course in allCourses %}
+                <tr>
+                    <td>{{ course.id }}</td>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.hour }} heures</td>
+                    <td>{{ course.description }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
+
+    
 
         <!-- Modal for Users-->
         <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form method="POST" id="userForm">
+     
+                {{ form_start(languageForm, { 'action': path('post-language') }) }}
                     <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Créer un utilisateur</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter une langue</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="nom" id="floatingNom" placeholder="njeunga" required>
-                                <label for="floatingNom">Nom</label>
+                                {{ form_row(languageForm.name) }}
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" name="email" id="floatingMail" placeholder="name@example.com" required>
-                                <label for="floatingMail">Mail</label>
+                                {{ form_row(languageForm.description) }}
                             </div>
                             <div class="form-floating">
-                                <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password" required>
-                                <label for="floatingPassword">Password</label>
+                                {{ form_row(languageForm.hour) }}
                             </div>
                     </div>
                     <div class="modal-footer">
@@ -44,7 +54,8 @@
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </div>
                     </div>
-                </form>
+                {{ form_end(languageForm) }}
+            
             </div>
         </div>
     </div>
