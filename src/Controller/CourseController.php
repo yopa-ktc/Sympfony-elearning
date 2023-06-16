@@ -6,6 +6,9 @@ use App\Entity\Language;
 use App\Form\LanguageFormType;
 use App\Repository\CourseRepository;
 use App\Repository\LanguageRepository;
+use SendGrid\Mail\Mail; 
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -57,23 +60,41 @@ class CourseController extends AbstractController
 
 
     #[route('post_language', name:'post-language', methods: 'POST')]
-    public function postLanguage(LanguageRepository $languageR, Request $request){
+    public function postLanguage(LanguageRepository $languageR, Request $request, MailerInterface $mailer){
 
-        $newLanguage = new Language();
-        $form = $this->createForm(LanguageFormType::class, $newLanguage);
+        // $newLanguage = new Language();
+        // $form = $this->createForm(LanguageFormType::class, $newLanguage);
 
-        $form->handleRequest($request);
+        // $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Traitez les données du formulaire ici
-            // Vous pouvez accéder aux valeurs du formulaire à l'aide de $yourEntity
-            $languageR->save($newLanguage, true);
+        // if ($form->isSubmitted() && $form->isValid()) {
+        //     // Traitez les données du formulaire ici
+        //     // Vous pouvez accéder aux valeurs du formulaire à l'aide de $yourEntity
+        //     $languageR->save($newLanguage, true);
+
+            
+
+            $apiKey = $_ENV['SENDGRID_API_KEY'];
+            $email = new Mail();
+            $email->setFrom("yoparemy@gmail.com", "yopa");
+            $email->setSubject("Test Email");
+            $email->addTo("njeungayopa@gmail.com", "Recipient Name");
+            $email->addContent("text/plain", "Hello, this is a test email.");
+
+            $sendgrid = new \SendGrid($apiKey);
+
+            try {
+                $response = $sendgrid->send($email);
+                print_r($response);
+            } catch (\Exception $e) {
+                echo 'Caught exception: '. $e->getMessage() ."\n";
+            }
 
             // Redirigez ou effectuez toute autre action après la soumission réussie du formulaire
             return $this->redirectToRoute('all_coures');
-        }else{
-            return -1;
-        }
+        // }else{
+        //     return -1;
+        // }
     }
 
     public function index(): JsonResponse
